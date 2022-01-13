@@ -1,8 +1,27 @@
 version: "3.8"
 services:
   build_node:
+    profiles: ["build"]
     image: "rust:1.57"
     volumes:
       - ./distributed_nodes:/distributed_nodes
     environment:
       - USER=root
+
+  node1:
+    image: "distributed_node"
+    hostname: node1
+    ports:
+      - "6379:6379"
+    depends_on:
+      - "node2"
+    environment:
+      - NODES=["node2:6379"]
+
+  node2:
+    image: "distributed_node"
+    hostname: node2
+    ports:
+      - "6380:6379"
+    environment:
+      - NODES=["node1:6379"]
