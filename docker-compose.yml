@@ -1,4 +1,4 @@
-version: "3.8"
+version: "2"
 services:
   build_node:
     profiles: ["build"]
@@ -13,10 +13,15 @@ services:
     hostname: node1
     ports:
       - "6379:6379"
-    depends_on:
-      - "node2"
+    #depends_on:
+    #  - "node2"
     environment:
-      - NODES=["node2:6379"]
+      - NODES=node2:6380
+      - BIND=0.0.0.0:6379
+    networks:
+      main:
+        aliases:
+          - node1
 
   node2:
     image: "distributed_node"
@@ -24,4 +29,12 @@ services:
     ports:
       - "6380:6379"
     environment:
-      - NODES=["node1:6379"]
+      - NODES=node1:6379
+      - BIND=0.0.0.0:6380
+    networks:
+      main:
+        aliases:
+          - node2
+
+networks:
+  main:
